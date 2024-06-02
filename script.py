@@ -12,12 +12,22 @@ pip_executable = os.path.join(env_dir, 'bin', 'pip')
 subprocess.run([pip_executable, "install"] + ["flask", "flask_sqlalchemy", "flask_migrate"])
 
 
-
 with open("wsgi.py", "x") as file:
-    file.write("from app.app import app\n")
+    file.write("from app.app import app, db\n")
     file.write("\n")
     file.write("if __name__ == '__main__':\n")
+    file.write("    with app.app_context():\n")
+    file.write("        db.create_all()\n")
     file.write("    app.run(debug=True)")
+
+with open("models.py", "x") as file:
+    file.write("from app.app import db\n")
+    file.write("class User(db.Model):\n")
+    file.write("  id = db.Column(db.Integer, primary_key=True)\n")
+    file.write("  login = db.Column(db.String(100), unique=True)\n")
+    file.write("  password = db.Column(db.String(100))\n")
+    file.write("  date = db.Column(db.DateTime)\n")
+
 
 
     
@@ -49,6 +59,6 @@ os.chdir('..')
 os.chdir("templates")
 with open("index.html", "x") as file:
     file.write("<!DOCTYPE html>\n<head>\n")
-    file.write('     <link rel="stylesheet" href="{{ url_for("static", filename="index.css") }}">\n')
+    file.write('     <link rel="stylesheet" href="{{ url_for("static", filename="style.css") }}">\n')
     file.write("     <html lang='en'>\n     <meta charset='UTF-8'>\n     <meta meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'>\n</head>\n")
     file.write("<body>\n</body>")
